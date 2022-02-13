@@ -20,45 +20,38 @@ numbers = ['','one','two','three','four','five','six','seven','eight','nine','te
 text=""
 # Difference minutes / minute
 def have_pluralsuffix(m):
-    if m== 1 or m == 59 : 
-        return False
-    return True
+    return m not in [1, 59]
 
 # quarter dont include past or to !! 
 def have_quarter_or_half(m):
-    if m%30==15 or m==30 : 
-        return True
-    return False
+    return m%30==15 or m==30
 
     
 
 def timeInWords(h, m):
-    if m==0 : 
+    if m==0: 
         text= str(numbers[h] + " o' clock")
     elif 0<m<=30:
-        if   not have_quarter_or_half(m) : 
-            if have_pluralsuffix(m):
-                text=str(numbers[m] +" minutes past " + numbers[h])
-            else:
-                text=str(numbers[m] +" minute past " + numbers[h])
+        if have_quarter_or_half(m):
+            text = str(f'{numbers[m]} past {numbers[h]}')
 
-            
+        elif have_pluralsuffix(m):
+            text = str(f'{numbers[m]} minutes past {numbers[h]}')
         else:
-            text=str(numbers[m] +" past " + numbers[h])
+            text = str(f'{numbers[m]} minute past {numbers[h]}')
 
+
+    elif have_quarter_or_half(m):  
+
+        text = str(f'{numbers[(30-m)%30]} to {numbers[h+1]}')
+                
+                
+
+    elif have_pluralsuffix(m):
+        text = str(f'{numbers[(30-m)%30]} minutes to {numbers[h+1]}')
     else:
-        if not have_quarter_or_half(m) : 
-            if have_pluralsuffix(m):
-                text= str(numbers[(30-m)%30] +" minutes to " + numbers[h+1])
-            else :
-                text= str(numbers[(30-m)%30] +" minute to " + numbers[h+1])
+        text = str(f'{numbers[(30-m)%30]} minute to {numbers[h+1]}')
 
-        else:  
-
-            text= str(numbers[(30-m)%30] +" to " + numbers[h+1])
-        
-        
-        
     print(text)
     return text
         
@@ -66,14 +59,11 @@ def timeInWords(h, m):
     
     
 if __name__ == '__main__':
-    fptr = open(os.environ['OUTPUT_PATH'], 'w')
+    with open(os.environ['OUTPUT_PATH'], 'w') as fptr:
+        h = int(input().strip())
 
-    h = int(input().strip())
+        m = int(input().strip())
 
-    m = int(input().strip())
+        result = timeInWords(h, m)
 
-    result = timeInWords(h, m)
-
-    fptr.write(result + '\n')
-
-    fptr.close()
+        fptr.write(result + '\n')
